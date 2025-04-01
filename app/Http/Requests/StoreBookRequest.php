@@ -14,6 +14,10 @@ class StoreBookRequest extends FormRequest
             'description' => 'nullable|string',
             'year_published' => 'required|integer|min:1000|max:' . date('Y'),
             'genre' => 'nullable|string|max:100',
+            'category_id' => 'required|exists:categories,id_category',
+             'barcode' => 'required|string|unique:books,barcode|max:255',
+              'category_id' => 'required|exists:categorias,id_category'
         ];
+        
     }
 }

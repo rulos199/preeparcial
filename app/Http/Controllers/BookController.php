@@ -3,38 +3,43 @@
 namespace App\Http\Controllers;
 
 use App\Models\Book;
-use Illuminate\Http\Request;
-use App\Http\Requests\BookRequest;
 use Illuminate\Http\Response;
+use App\Http\Requests\StoreBookRequest;
+use App\Http\Requests\UpdateBookRequest;
 
 class BookController extends Controller
 {
+    // Mostrar todos los libros
     public function index()
     {
-        return response()->json(Book::all(), Response::HTTP_OK);
+        return response()->json(Book::with('category')->get(), Response::HTTP_OK);
     }
 
-    public function store(Request $request)
+    // Crear un nuevo libro
+    public function store(StoreBookRequest $request)
     {
-        $book = Book::create($request->all());
-        return response()->json($book, 201);
+        $book = Book::create($request->validated());
+        return response()->json($book, Response::HTTP_CREATED);
     }
 
+    // Mostrar un libro con su categoría
     public function show(Book $book)
     {
-        return Book::findOrFail($id);
+        $book->load('category'); // carga la relación
+        return response()->json($book, Response::HTTP_OK);
     }
 
-    public function update(Request $request, Book $book)
+    // Actualizar un libro
+    public function update(UpdateBookRequest $request, Book $book)
     {
-        $book = Book::findOrFail($id);
-        $book->update($request->all());
-        return response()->json($book, 200);
+        $book->update($request->validated());
+        return response()->json($book, Response::HTTP_OK);
     }
 
-    public function destroy($id)
+    // Eliminar un libro
+    public function destroy(Book $book)
     {
-        Book::destroy($id);
-        return response()->json(null, 204);
+        $book->delete();
+        return response()->json(null, Response::HTTP_NO_CONTENT);
     }
 }
